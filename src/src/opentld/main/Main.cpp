@@ -101,12 +101,12 @@ void Main::doWork(const sensor_msgs::ImageConstPtr& msg)
 				if(initialBB == NULL){
 					initialBB = new int[4];
 				}
-				initialBB[0] = selection[0];
-				initialBB[1] = selection[1];
-				initialBB[2] = selection[2];
-				initialBB[3] = selection[3];
+				initialBB[0] = box.x;
+				initialBB[1] = box.y;
+				initialBB[2] = box.width;
+				initialBB[3] = box.height;
 
-				ROS_ERROR("initialBB: %d", initialBB[0]);
+				// ROS_ERROR("initialBB: %d", initialBB[0]);
 			}
 
 			if(printResults != NULL){
@@ -282,21 +282,25 @@ void Main::loadRosparam(){
 void Main::objSelectCb(const std_msgs::Int32MultiArray::ConstPtr& obj)
 {
 
-    selection[0] = obj->data[0];
-    selection[1] = obj->data[1];
-    selection[2] = obj->data[2];
-    selection[3] = obj->data[3];
-
-    Rect r;
-    r.x = obj->data[0];
-    r.y = obj->data[1];
-    r.width = obj->data[2];
-    r.height = obj->data[3];
-
     if(_param.mode == 2)
     {
-		if(r.height!=0 && r.width!=0){
+	    selection[0] = obj->data[0];
+	    selection[1] = obj->data[1];
+	    selection[2] = obj->data[2];
+	    selection[3] = obj->data[3];
+
+	    Rect r;
+	    r.x = obj->data[0];
+	    r.y = obj->data[1];
+	    r.width = obj->data[2];
+	    r.height = obj->data[3];
+
+
+		if(r.height!=0 && r.width!=0 && _param.new_object == 1){
 			tld->selectObject(grey, &r);
+		}
+		else if(r.height!=0 && r.width!=0 && _param.new_object == 0){
+					tld->coninueSelectObject(grey, &r);
 		}
 	}
 	else
@@ -325,10 +329,10 @@ void Main::paramUpdatedCb(const std_msgs::StringConstPtr &param_name)
       else
           tld->learningEnabled = true;
     }
-    else if(param_name->data == "ob_track_tld_detector_off"){
-      ros::param::get("/"+_param.global_namespace+"/parameters/flyt/ob_track_tld_detector_off",param_value);
-      _param.detector_off = std::stoi(param_value);
-      if(_param.detector_off)
+    else if(param_name->data == "ob_track_tld_detector_disabled"){
+      ros::param::get("/"+_param.global_namespace+"/parameters/flyt/ob_track_tld_detector_disabled",param_value);
+      _param.detector_disabled = std::stoi(param_value);
+      if(_param.detector_disabled)
           tld->alternating = true;
       else
           tld->alternating = false;
@@ -346,6 +350,10 @@ void Main::paramUpdatedCb(const std_msgs::StringConstPtr &param_name)
           tld->release();
           tld->readFromFile(modelPath);
       }
+    }
+    else if(param_name->data == "ob_track_tld_new_object"){
+      ros::param::get("/"+_param.global_namespace+"/parameters/flyt/ob_track_tld_new_object",param_value);
+      _param.new_object = std::stoi(param_value);
     }
     else if(param_name->data == "ob_track_mode"){
       ros::param::get("/"+_param.global_namespace+"/parameters/flyt/ob_track_mode",param_value);

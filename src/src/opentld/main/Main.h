@@ -112,9 +112,10 @@ public:
         std::string global_namespace;
         bool clear_model;
         bool learning_disabled;
-        bool detector_off;
+        bool detector_disabled;
         bool export_model;
         bool import_model;
+        bool new_object;
         int mode;
     }_param;
 
@@ -156,9 +157,10 @@ public:
         _parameter_updated_sub = pnode.subscribe("parameter_updated",10,&Main::paramUpdatedCb,this);
         _param.clear_model = false;
         _param.learning_disabled = false;
-        _param.detector_off = false;
+        _param.detector_disabled = false;
         _param.export_model = false;
         _param.import_model = false;
+        _param.new_object = false;
         _param.mode = 2;
 
 
@@ -178,12 +180,12 @@ public:
         else
             ros::param::set("/"+_param.global_namespace+"/parameters/flyt/ob_track_tld_learning_disabled",std::to_string(_param.learning_disabled));
 
-        if(ros::param::has("/"+_param.global_namespace+"/parameters/flyt/ob_track_tld_detector_off")){
-            ros::param::get("/"+_param.global_namespace+"/parameters/flyt/ob_track_tld_detector_off",param_val);
-            _param.detector_off = std::stoi(param_val);
+        if(ros::param::has("/"+_param.global_namespace+"/parameters/flyt/ob_track_tld_detector_disabled")){
+            ros::param::get("/"+_param.global_namespace+"/parameters/flyt/ob_track_tld_detector_disabled",param_val);
+            _param.detector_disabled = std::stoi(param_val);
         }
         else
-            ros::param::set("/"+_param.global_namespace+"/parameters/flyt/ob_track_tld_detector_off",std::to_string(_param.detector_off));
+            ros::param::set("/"+_param.global_namespace+"/parameters/flyt/ob_track_tld_detector_disabled",std::to_string(_param.detector_disabled));
 
         if(ros::param::has("/"+_param.global_namespace+"/parameters/flyt/ob_track_tld_export_model")){
             ros::param::get("/"+_param.global_namespace+"/parameters/flyt/ob_track_tld_export_model",param_val);
@@ -205,6 +207,13 @@ public:
         }
         else
             ros::param::set("/"+_param.global_namespace+"/parameters/flyt/ob_track_mode",std::to_string(_param.mode));
+
+        if(ros::param::has("/"+_param.global_namespace+"/parameters/flyt/ob_track_tld_new_object")){
+            ros::param::get("/"+_param.global_namespace+"/parameters/flyt/ob_track_tld_new_object",param_val);
+            _param.new_object = std::stoi(param_val);
+        }
+        else
+            ros::param::set("/"+_param.global_namespace+"/parameters/flyt/ob_track_tld_new_object",std::to_string(_param.mode));
 
 		//image_pub_ = it_.advertise("/"+global_namespace+"/object/object_image", 1);
 	}
