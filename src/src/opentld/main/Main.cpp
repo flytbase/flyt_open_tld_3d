@@ -23,7 +23,6 @@
  *      Author: Georg Nebehay
  */
 
-
 #include "Main.h"
 #include "Config.h"
 #include "ImAcq.h"
@@ -40,7 +39,6 @@ using namespace tld;
 using namespace cv;
 using namespace std;
 
-
 /****SERVICE can TALK BACK !*/
 bool Main::add(open_tld_3d::model::Request  &req, open_tld_3d::model::Response &res){
 	ROS_INFO("Request : %s", req.order.c_str());
@@ -54,10 +52,8 @@ bool Main::add(open_tld_3d::model::Request  &req, open_tld_3d::model::Response &
 		tld->release();
 	}	
 	res.answer=req.order;
-	return true;
-	
+	return true;	
 }
-
 
 void Main::doWork(const sensor_msgs::ImageConstPtr& msg, const sensor_msgs::PointCloud2ConstPtr& cloudy)
 {
@@ -66,8 +62,6 @@ void Main::doWork(const sensor_msgs::ImageConstPtr& msg, const sensor_msgs::Poin
 		doWork(msg);
 	}
 }
-
-
 
 void Main::doWork(const sensor_msgs::ImageConstPtr& msg)
 {	
@@ -232,9 +226,7 @@ void Main::doWork(const sensor_msgs::ImageConstPtr& msg)
 	}
 }
 
-
 /*********************PUBLISH FUNCtiON**********************/
-
 void Main::publish(cv::Rect *currBB){
 	geometry_msgs::PolygonStamped polyStamp;
 	polyStamp.header.stamp=ros::Time::now();
@@ -261,11 +253,7 @@ void Main::publish(cv::Rect *currBB){
 	poete->publish(polyStamp);
 }
 
-
-
 /*******************Param FUNTION**************************/
-
-
 void Main::loadRosparam(){	
 	pnode.param<bool>("Graphical_interface", showOutput, true);
 	pnode.param<bool>("ShowTrajectory", showTrajectory, false);
@@ -359,6 +347,8 @@ void Main::paramUpdatedCb(const std_msgs::StringConstPtr &param_name)
     else if(param_name->data == "ob_track_mode"){
       ros::param::get("/"+_param.global_namespace+"/parameters/flyt/ob_track_mode",param_value);
       _param.mode = std::stoi(param_value);
+      if(_param.mode!=2)
+      	tld->release();
     }
 }
 
