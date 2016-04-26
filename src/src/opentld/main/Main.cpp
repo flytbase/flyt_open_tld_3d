@@ -295,6 +295,7 @@ void Main::objSelectCb(const std_msgs::Int32MultiArray::ConstPtr& obj)
 	    r.width = obj->data[2];
 	    r.height = obj->data[3];
 
+	    ROS_ERROR("x, y, w, h = %d, %d, %d, %d", r.x,r.y,r.width,r.height);
 
 		if(r.height!=0 && r.width!=0 && _param.new_object == 1){
 			tld->selectObject(grey, &r);
