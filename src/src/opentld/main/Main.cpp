@@ -346,6 +346,8 @@ void Main::paramUpdatedCb(const std_msgs::StringConstPtr &param_name)
     else if(param_name->data == "ob_track_mode"){
       ros::param::get("/"+_param.global_namespace+"/parameters/flyt/ob_track_mode",param_value);
       _param.mode = std::stoi(param_value);
+      if(_param.mode!=2)
+      	tld->release();
     }
 }
 
