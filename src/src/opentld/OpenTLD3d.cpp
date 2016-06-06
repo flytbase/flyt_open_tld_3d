@@ -73,8 +73,10 @@ int main (int argc, char **argv){
 		scribe_cloud = my_node.subscribe<sensor_msgs::PointCloud2> ("camera/depth/points_xyzrgb", 1, &Handler3D::setCloud, theHandler);
 	}
 	
-	image_transport::ImageTransport it(my_node);
-	image_transport::CameraSubscriber scribe_image = it.subscribeCamera("camera/rgb/image", que, boost::bind(&Main::doWork, main, _1));
+
+    image_transport::ImageTransport it(my_node);
+    //image_transport::CameraSubscriber scribe_image = it.subscribeCamera("flytcam/image_capture", que, boost::bind(&Main::doWork, main, _1));
+    image_transport::Subscriber scribe_image = it.subscribe("flytcam/image_capture", que, &Main::doWork, main);
 	
 
 	/*

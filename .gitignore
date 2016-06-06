@@ -1,0 +1,17 @@
+
+#Compiled Directories
+build/
+devel/
+
+#Compiled Files
+.catkin_workspace
+.catkin_tools/
+*.txt.user
+
+
+#back up files
+*~
+*.autosave
+*.swp
+*.o
+*.pyc

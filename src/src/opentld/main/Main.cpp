@@ -23,7 +23,6 @@
  *      Author: Georg Nebehay
  */
 
-
 #include "Main.h"
 #include "Config.h"
 #include "ImAcq.h"
@@ -34,9 +33,12 @@
 #include "cv_bridge/cv_bridge.h"
 #include <sensor_msgs/image_encodings.h>
 
+// #include <stdio.h>
+// #include <stdlib.h>
+
 using namespace tld;
 using namespace cv;
-
+using namespace std;
 
 /****SERVICE can TALK BACK !*/
 bool Main::add(open_tld_3d::model::Request  &req, open_tld_3d::model::Response &res){
@@ -51,10 +53,8 @@ bool Main::add(open_tld_3d::model::Request  &req, open_tld_3d::model::Response &
 		tld->release();
 	}	
 	res.answer=req.order;
-	return true;
-	
+	return true;	
 }
-
 
 void Main::doWork(const sensor_msgs::ImageConstPtr& msg, const sensor_msgs::PointCloud2ConstPtr& cloudy)
 {
@@ -64,16 +64,13 @@ void Main::doWork(const sensor_msgs::ImageConstPtr& msg, const sensor_msgs::Poin
 	}
 }
 
-
-
 void Main::doWork(const sensor_msgs::ImageConstPtr& msg)
 {	
 	if(ros::Time::now()-msg->header.stamp<ros::Duration(time_constant)){
 		cv_bridge::CvImagePtr image_msg =cv_bridge::toCvCopy(msg, sensor_msgs::image_encodings::RGB8);		
 		Mat img=image_msg->image;
-		Mat grey;
+		// Mat grey;
 		cvtColor(img, grey, CV_BGR2GRAY);
-
 		if(flag==true){
 	
 			tld->detectorCascade->setImgSize(grey.cols, grey.rows, grey.step);
@@ -91,10 +88,10 @@ void Main::doWork(const sensor_msgs::ImageConstPtr& msg)
 			}
 
 			if(selectManually){
-				CvRect box;
-				if(getBBFromUser(&img, box, gui) == PROGRAM_EXIT){
-					return;
-				}
+         CvRect box;
+         if(getBBFromUser(&img, box, gui) == PROGRAM_EXIT){
+            return;
+         }
 
 				if(initialBB == NULL){
 					initialBB = new int[4];
@@ -229,9 +226,7 @@ void Main::doWork(const sensor_msgs::ImageConstPtr& msg)
 	}
 }
 
-
 /*********************PUBLISH FUNCtiON**********************/
-
 void Main::publish(cv::Rect *currBB){
 	geometry_msgs::PolygonStamped polyStamp;
 	polyStamp.header.stamp=ros::Time::now();
@@ -259,10 +254,7 @@ void Main::publish(cv::Rect *currBB){
 }
 
 
-
 /*******************Param FUNTION**************************/
-
-
 void Main::loadRosparam(){	
 	pnode.param<bool>("Graphical_interface", showOutput, true);
 	pnode.param<bool>("ShowTrajectory", showTrajectory, false);
@@ -274,6 +266,93 @@ void Main::loadRosparam(){
 	pnode.param<bool>("Tracking3D", enable3DTracking, true);
 }
 
+/*****************Obj Seection Callback************/
+
+void Main::objSelectCb(const std_msgs::Int32MultiArray::ConstPtr& obj)
+{
+
+    if(_param.mode == 2)
+    {
+	    selection[0] = obj->data[0];
+	    selection[1] = obj->data[1];
+	    selection[2] = obj->data[2];
+	    selection[3] = obj->data[3];
+
+	    Rect r;
+	    r.x = obj->data[0];
+	    r.y = obj->data[1];
+	    r.width = obj->data[2];
+	    r.height = obj->data[3];
+
+	    ROS_ERROR("x, y, w, h = %d, %d, %d, %d", r.x,r.y,r.width,r.height);
+
+		if(r.height!=0 && r.width!=0 && _param.new_object == 1){
+			tld->release();
+			tld->selectObject(grey, &r);
+		}
+		else if(r.height!=0 && r.width!=0 && _param.new_object == 0){
+					tld->coninueSelectObject(grey, &r);
+		}
+	}
+	else
+	{
+		tld->release();
+    }
+    ROS_INFO("Selection: %d", selection[0]);
+}
+
+
+
+void Main::paramUpdatedCb(const std_msgs::StringConstPtr &param_name)
+{
+    std::string param_value;
+    if(param_name->data == "ob_track_tld_clear_model"){
+      ros::param::get("/"+_param.global_namespace+"/parameters/flyt/ob_track_tld_clear_model",param_value);
+      _param.clear_model = std::stoi(param_value);
+      if(_param.clear_model)
+          tld->release();
+    }
+    else if(param_name->data == "ob_track_tld_learning_disabled"){
+      ros::param::get("/"+_param.global_namespace+"/parameters/flyt/ob_track_tld_learning_disabled",param_value);
+      _param.learning_disabled = std::stoi(param_value);
+      if(_param.learning_disabled)
+          tld->learningEnabled = false;
+      else
+          tld->learningEnabled = true;
+    }
+    else if(param_name->data == "ob_track_tld_detector_disabled"){
+      ros::param::get("/"+_param.global_namespace+"/parameters/flyt/ob_track_tld_detector_disabled",param_value);
+      _param.detector_disabled = std::stoi(param_value);
+      if(_param.detector_disabled)
+          tld->alternating = true;
+      else
+          tld->alternating = false;
+    }
+    else if(param_name->data == "ob_track_tld_export_model"){
+      ros::param::get("/"+_param.global_namespace+"/parameters/flyt/ob_track_tld_export_model",param_value);
+      _param.export_model = std::stoi(param_value);
+      if(_param.export_model && tld->currBB!=NULL)
+          tld->writeToFile(modelExportFile);
+    }
+    else if(param_name->data == "ob_track_tld_import_model"){
+      ros::param::get("/"+_param.global_namespace+"/parameters/flyt/ob_track_tld_import_model",param_value);
+      _param.import_model = std::stoi(param_value);
+      if(_param.import_model){
+          tld->release();
+          tld->readFromFile(modelPath);
+      }
+    }
+    else if(param_name->data == "ob_track_tld_new_object"){
+      ros::param::get("/"+_param.global_namespace+"/parameters/flyt/ob_track_tld_new_object",param_value);
+      _param.new_object = std::stoi(param_value);
+    }
+    else if(param_name->data == "ob_track_mode"){
+      ros::param::get("/"+_param.global_namespace+"/parameters/flyt/ob_track_mode",param_value);
+      _param.mode = std::stoi(param_value);
+      if(_param.mode!=2)
+      	tld->release();
+    }
+}
 
 /****************GUI**********************/
 
@@ -285,15 +364,15 @@ void Main::Gui(Mat& img, Mat& grey){
 		/********************KEYBOARD**************/
 		char key = gui->getKey();
 		if(keyboardControl==true){
-			//if(key == 'b'){
-			//    ForegroundDetector *fg = tld->detectorCascade->foregroundDetector;
-			//    if(fg->bgImg.empty()){
-			//    fg->bgImg = grey.clone();
-			// }
-			// else{
-			//      fg->bgImg.release();
-			//  }
-			//}
+//            if(key == 'b'){
+//                ForegroundDetector *fg = tld->detectorCascade->foregroundDetector;
+//                if(fg->bgImg.empty()){
+//                fg->bgImg = grey.clone();
+//             }
+//             else{
+//                  fg->bgImg.release();
+//              }
+//            }
 
 			if(key == 'c'){
 				//clear everything
@@ -336,14 +415,12 @@ void Main::Gui(Mat& img, Mat& grey){
 			
 			if(key == 'n'){
 				CvRect box;
-				//std::cout<<"Gow "<<std::endl;
+
 				if(getBBFromUser(&img, box, gui) == PROGRAM_EXIT){
 					//  break;
 					exit(0);
 				}
-				//std::cout<<"hellow"<<std::endl;
 				Rect r = Rect(box);
-				//std::cout<<"the pointer box "<< r.height <<" "<<r.width <<std::endl;
 				if(r.height!=0 && r.width!=0){
 					tld->coninueSelectObject(grey, &r);
 				}

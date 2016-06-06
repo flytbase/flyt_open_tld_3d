@@ -1,7 +1,8 @@
 <launch>
-
-  <node name="OpenTLD3D" pkg="open_tld_3d" type="OpenTLD3D">
-    <rosparam file="$(find open_tld_3d)/config/opentldconfig.yaml" command="load" />
-  </node>
-
+	<arg name="global_namespace" />
+  <group ns="$(arg global_namespace)">
+	  <node name="OpenTLD3D" pkg="open_tld_3d" type="OpenTLD3D" output="screen">
+	    <rosparam file="$(find open_tld_3d)/config/opentldconfig.yaml" command="load" />
+	  </node>
+	</group>
 </launch>
