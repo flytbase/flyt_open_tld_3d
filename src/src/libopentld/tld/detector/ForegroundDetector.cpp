@@ -28,6 +28,7 @@
 #include "BlobResult.h"
 
 using namespace cv;
+using namespace std;
 
 namespace tld
 {

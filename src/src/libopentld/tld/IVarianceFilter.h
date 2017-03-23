@@ -26,7 +26,7 @@
 #ifndef IVARIANCEFILTER_H_
 #define IVARIANCEFILTER_H_
 
-#include <opencv/cv.h>
+#include <opencv2/opencv.hpp>
 
 #include "IntegralImage.h"
 #include "DetectionResult.h"

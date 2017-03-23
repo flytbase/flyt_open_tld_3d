@@ -30,6 +30,7 @@
 #include "DetectorCascade.h"
 
 using namespace cv;
+using namespace std;
 
 namespace tld
 {

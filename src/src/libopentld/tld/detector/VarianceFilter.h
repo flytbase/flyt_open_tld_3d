@@ -29,7 +29,7 @@
 #ifndef VARIANCEFILTER_H_
 #define VARIANCEFILTER_H_
 
-#include <opencv/cv.h>
+#include <opencv2/opencv.hpp>
 
 #include "IVarianceFilter.h"
 #include "IntegralImage.h"

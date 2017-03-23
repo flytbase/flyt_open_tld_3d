@@ -27,7 +27,7 @@
 #ifndef FBTRACK_H_
 #define FBTRACK_H_
 
-#include <opencv/cv.h>
+#include <opencv2/opencv.hpp>
 
 /*
  * @param imgI       Image contain Object with known BoundingBox

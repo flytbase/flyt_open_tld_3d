@@ -20,7 +20,7 @@
 #ifndef _CU_VARIANCEFILTER_H_
 #define _CU_VARIANCEFILTER_H_
 
-#include <opencv/cv.h>
+#include <opencv2/opencv.hpp>
 #include <opencv2/gpu/gpu.hpp>
 
 #include "IVarianceFilter.h"

@@ -27,7 +27,7 @@
 #include <sensor_msgs/Image.h>
 #include "pcl_ros/point_cloud.h"
 // PCL specific includes
-#include <pcl/ros/conversions.h>
+#include <pcl/conversions.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 
@@ -56,27 +56,27 @@ int main (int argc, char **argv){
 	Handler3D *theHandler = new Handler3D();
 	
 	//ROS param
-	int que;
-	priv_node.param<int>("queue_size", que, 100);
-	//Tracking option
-	bool enable3DTracking;
-	priv_node.param<bool>("Tracking3D", enable3DTracking, true);
+	// int que;
+	// priv_node.param<int>("queue_size", que, 100);
+	// //Tracking option
+	// bool enable3DTracking;
+	// priv_node.param<bool>("Tracking3D", enable3DTracking, true);
 	//Publisher and Subscriber
 	ros::Publisher poete=my_node.advertise<geometry_msgs::PolygonStamped>("/tracking2D", 1000);
 	ros::Publisher pilote=my_node.advertise<geometry_msgs::PointStamped>("/tracking3D", 1000);
 	ros::Subscriber scribe_cloud;
 	/****OLD version***/
 	
-	if(enable3DTracking==true){
-		//Do not compare the timestamp for now. A bit random :/
-		std::cout<<"FULL track"<<std::endl;
-		scribe_cloud = my_node.subscribe<sensor_msgs::PointCloud2> ("camera/depth/points_xyzrgb", 1, &Handler3D::setCloud, theHandler);
-	}
+	// if(enable3DTracking==true){
+	// 	//Do not compare the timestamp for now. A bit random :/
+	// 	std::cout<<"FULL track"<<std::endl;
+	// 	scribe_cloud = my_node.subscribe<sensor_msgs::PointCloud2> ("camera/depth/points_xyzrgb", 1, &Handler3D::setCloud, theHandler);
+	// }
 	
 
     image_transport::ImageTransport it(my_node);
     //image_transport::CameraSubscriber scribe_image = it.subscribeCamera("flytcam/image_capture", que, boost::bind(&Main::doWork, main, _1));
-    image_transport::Subscriber scribe_image = it.subscribe("flytcam/image_capture", que, &Main::doWork, main);
+    image_transport::Subscriber scribe_image = it.subscribe("flytcam/image_capture", 100, &Main::doWork, main);
 	
 
 	/*

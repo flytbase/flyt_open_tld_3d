@@ -29,7 +29,7 @@
 #include <cmath>
 #include <cstdio>
 
-#include <opencv/cv.h>
+#include <opencv2/opencv.hpp>
 #include <opencv/highgui.h>
 
 const int MAX_COUNT = 500;

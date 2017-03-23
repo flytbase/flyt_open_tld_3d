@@ -28,7 +28,7 @@
 #ifndef BBPREDICT_H_
 #define BBPREDICT_H_
 
-#include <opencv/cv.h>
+#include <opencv2/opencv.hpp>
 
 /**
  * @param bb0   The previous BoundingBox.

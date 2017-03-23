@@ -10,7 +10,7 @@ void Handler3D::tracking(cv::Rect *currBB){
 		int x=currBB->x+(currBB->width/2);
 		int y=currBB->y+(currBB->height/2);
 		pcl::PointXYZRGBA point(cloud->at(x,y));
-		if(!isnan(point.x) && !isnan(point.y) && !isnan(point.z)){
+		if(!std::isnan(point.x) && !std::isnan(point.y) && !std::isnan(point.z)){
 			(*this).publish(point);
 		}
 	}

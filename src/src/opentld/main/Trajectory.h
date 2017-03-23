@@ -21,7 +21,7 @@
 #define TRAJECTORY_H_
 
 #include <vector>
-#include <opencv/cv.h>
+#include <opencv2/opencv.hpp>
 
 /**
  * @author Clemens Korner

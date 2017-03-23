@@ -1,7 +1,7 @@
 #ifndef _TIMING_H_
 #define _TIMING_H_
 
-#include <opencv/cv.h>
+#include <opencv2/opencv.hpp>
 
 //#define CPU_FREQ 2100000000
 

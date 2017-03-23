@@ -20,7 +20,7 @@
 #ifndef _CU_ENSEMBLECLASSIFIER_H_
 #define _CU_ENSEMBLECLASSIFIER_H_
 
-#include <opencv/cv.h>
+#include <opencv2/opencv.hpp>
 #include <opencv2/gpu/gpu.hpp>
 
 #include "IEnsembleClassifier.h"
