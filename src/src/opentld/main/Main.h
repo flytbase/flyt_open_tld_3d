@@ -93,7 +93,7 @@ public:
 	FILE *resultsFile;
 	Trajectory trajectory;
 	double time_constant;
-	int *selection;
+	int *selection = NULL;
   Mat grey;
 
 	//3D
